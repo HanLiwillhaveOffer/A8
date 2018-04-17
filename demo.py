@@ -1,6 +1,11 @@
 from random import choice, randint
 import random
 def _3pointer_contest(_3PG):
+    """
+    simulate the score based on the shooting percetage of the player
+    :param _3PG: shooting percentage of a player
+    :return: the simulated score of the player
+    """
     score=0
     for i in range(25):
         shoot = random.randint(1,sum(_3PG))
@@ -17,9 +22,20 @@ def _3pointer_contest(_3PG):
     return score
 
 def sort_dic(dic):
+    """
+    get the sorted game result based on the socres
+    :param dic: the game result
+    :return: the sorted game result
+    """
     return sorted(dic.items(),key = lambda item:item[1],reverse=True)
 
 def get_game_result(candidate_number,player_list):
+    """
+    To get the player list of next round based on the number of required candidate and the player list of current round.
+    :param candidate_number: the number of required candidate
+    :param player_list: the player list of current round
+    :return: the player list of next round
+    """
     threshold = 0
     score = 0
     result = {}
@@ -38,36 +54,37 @@ def get_game_result(candidate_number,player_list):
             next_round_candidate_list.append(player)
     return next_round_candidate_list
 
-curry=['curry',70,30]
-george=['george',65,35]
-beal = ['beal',68,32]
-thompson=['thompson',72,28]
-gordan = ['gordan',69,31]
-player_list = [curry,george,beal,thompson,gordan]
-over_time_flag=True
-highest_score=0
-winner = ''
-candidate_list = get_game_result(3,player_list)
-print('The players in the final game are:')
-for player in candidate_list:
-    print(player[0])
-candidate_list = get_game_result(1, candidate_list)
-while over_time_flag:
-    if len(candidate_list)==1:
-        over_time_flag=False
-    else:
-        print('The players in the overtime game are:')
-        for player in candidate_list:
-            print(player[0])
-        candidate_list=get_game_result(1,candidate_list)
+def main():
+
+    curry=['curry',70,30]
+    george=['george',65,35]
+    beal = ['beal',68,32]
+    thompson=['thompson',72,28]
+    gordan = ['gordan',69,31]
+    player_list = [curry,george,beal,thompson,gordan]
+    over_time_flag=True
+    highest_score=0
+    winner = ''
+    candidate_list = get_game_result(3,player_list)
+    print('The players in the final game are:')
+    for player in candidate_list:
+        print(player[0])
+    candidate_list = get_game_result(1, candidate_list)
+    while over_time_flag:
+        if len(candidate_list)==1:
+            over_time_flag=False
+        else:
+            print('The players in the overtime game are:')
+            for player in candidate_list:
+                print(player[0])
+            candidate_list=get_game_result(1,candidate_list)
 
 
 
-print('The winner is {}!'.format(candidate_list[0][0]))
+    print('The winner is {}!'.format(candidate_list[0][0]))
 
-
-
-
+if __name__ == '__main__':
+    main()
 
 
 
