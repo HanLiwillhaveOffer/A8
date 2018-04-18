@@ -1,5 +1,6 @@
 from random import choice, randint
 import random
+import math
 
 class player():
     name=''
@@ -7,12 +8,14 @@ class player():
     stamina = 0
     on_fire_prob = 0
     growing = 1
-    def __init__(self,name,_3PG, stamina,on_fire_prob,growing):
+    def __init__(self,name,_3PG, stamina,on_fire_prob,growing,bonus=5,strategy=1):
         self.name = name
         self._3PG=_3PG
         self.stamina= stamina
         self.on_fire_prob = on_fire_prob
         self.growing=growing
+        self.bonus = bonus
+        self.strategy = strategy
 
     def _3pointer_contest(self):
         """
@@ -23,31 +26,64 @@ class player():
         score=0
         offset = 0
         state=1
+        lefttime = 60.0
         for i in range(25):
             shoot = random.randint(1,100)
-            if i<20:
-                if shoot<=self._3PG*(1-self.stamina/100*(i))*state:
-                    score+=1
-                    offset+=2
-                else:
-                    offset-=3
-            else:
-                if shoot<=self._3PG*(1-self.stamina/100*(i))*state:
+            runtime = self.runtime(i)
+            shootingtime = self.shootingtime(i, lefttime)
+            if i in range(self.bonus*5-4 ,self.bonus*5+1):
+                if shoot<=self._3PG*(1-self.stamina/100*(i))*state*math.log2(0.5*shootingtime+1):
                     score+=2
                     offset+=2
                 else:
                     offset-=3
+            else:
+                if shoot<=self._3PG*(1-self.stamina/100*(i))*state*math.log2(0.5*shootingtime+1):
+                    score+=1
+                    offset+=2
+                else:
+                    offset-=3
             state = self.get_on_fire_state(offset)
+            lefttime -= shootingtime + runtime
         return score
+
 
     def get_on_fire_state(self,offset):
         prob = random.randint(1,100)
         if prob<(self.on_fire_prob+offset):
             state = self.growing
-            print(self.name+ " is onfire")
+            #print(self.name+ " is onfire")
         else:
             state= 1
         return state
+
+    def runtime(self, i):
+        if (i + 1) % 5 == 0 and i < 24:
+            runtime = random.uniform(2, 4)
+        else:
+            runtime = 0
+        return runtime
+
+    def shootingtime(self, i, lefttime):
+        if self.strategy == 1:
+            shootingtime = random.uniform(1, lefttime/(25-i))
+        elif self.strategy == 2:
+            if i in range(self.bonus * 5 - 4, self.bonus * 5 + 1):
+                shootingtime = random.uniform(1, lefttime / (25 - i)) * 2
+            else:
+                shootingtime = random.uniform(1, lefttime/(25-i))
+        elif self.strategy == 3:
+            if i in range(10):
+                shootingtime = random.uniform(1, lefttime / (25 - i)) * 1.5
+            else:
+                shootingtime = random.uniform(1, lefttime / (25 - i))
+        elif self.strategy == 4:
+            if i in range(10):
+                shootingtime = random.uniform(1 / 0.8, lefttime / (25 - i)) * 0.8
+            else:
+                shootingtime = random.uniform(1, lefttime / (25 - i))
+        return shootingtime
+
 
 def sort_dic(dic):
     """
@@ -87,7 +123,7 @@ def one_simulation():
     Simulate one game
     :return: the winner of the game
     """
-    curry = player('curry', 70,1,15,1.28)
+    curry = player('curry', 70,1,15,1.28,1,4)
     george =player('george', 65,1,25,1.38)
     beal = player('beal',68,1,22,1.32)
     thompson = player('thompson',72,0.5,10,1.25)
