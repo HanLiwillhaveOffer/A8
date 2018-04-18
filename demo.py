@@ -44,7 +44,7 @@ def get_game_result(candidate_number,player_list):
     for player in player_list:
         score = _3pointer_contest([player[1], player[2]])
         result[player[0]] = score
-        print('{} got {} this round!'.format(player[0], score))
+        #print('{} got {} this round!'.format(player[0], score))
     threshold = sort_dic(result)[candidate_number-1][1]
     for key, value in result.items():
         if value >= threshold:
@@ -54,8 +54,11 @@ def get_game_result(candidate_number,player_list):
             next_round_candidate_list.append(player)
     return next_round_candidate_list
 
-def main():
-
+def one_simulation():
+    """
+    Simulate one game
+    :return: the winner of the game
+    """
     curry=['curry',70,30]
     george=['george',65,35]
     beal = ['beal',68,32]
@@ -63,26 +66,33 @@ def main():
     gordan = ['gordan',69,31]
     player_list = [curry,george,beal,thompson,gordan]
     over_time_flag=True
-    highest_score=0
-    winner = ''
     candidate_list = get_game_result(3,player_list)
-    print('The players in the final game are:')
-    for player in candidate_list:
-        print(player[0])
+    #print('The players in the final game are:')
     candidate_list = get_game_result(1, candidate_list)
     while over_time_flag:
         if len(candidate_list)==1:
             over_time_flag=False
         else:
-            print('The players in the overtime game are:')
-            for player in candidate_list:
-                print(player[0])
+            #print('The players in the overtime game are:')
+            #for player in candidate_list:
+                #print(player[0])
             candidate_list=get_game_result(1,candidate_list)
 
 
+    winner = candidate_list[0][0]
+    #print('The winner is {}!'.format(candidate_list[0][0]))
+    return winner
 
-    print('The winner is {}!'.format(candidate_list[0][0]))
 
+def main():
+    winner_list = []
+    for i in range(10000):
+        winner_list.append(one_simulation())
+    print('The winning rate of curry is {}.'.format(winner_list.count('curry')/len(winner_list)))
+    print('The winning rate of george is {}.'.format(winner_list.count('george') / len(winner_list)))
+    print('The winning rate of beal is {}.'.format(winner_list.count('beal') / len(winner_list)))
+    print('The winning rate of thompson is {}.'.format(winner_list.count('thompson') / len(winner_list)))
+    print('The winning rate of gordan is {}.'.format(winner_list.count('gordan') / len(winner_list)))
 if __name__ == '__main__':
     main()
 
