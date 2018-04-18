@@ -4,9 +4,15 @@ import random
 class player():
     name=''
     _3PG = 0
-    def __init__(self,name,_3PG):
+    stamina = 0
+    on_fire_prob = 0
+    growing = 1
+    def __init__(self,name,_3PG, stamina,on_fire_prob,growing):
         self.name = name
         self._3PG=_3PG
+        self.stamina= stamina
+        self.on_fire_prob = on_fire_prob
+        self.growing=growing
 
     def _3pointer_contest(self):
         """
@@ -15,19 +21,33 @@ class player():
         :return: the simulated score of the player
         """
         score=0
+        offset = 0
+        state=1
         for i in range(25):
             shoot = random.randint(1,100)
             if i<20:
-                if shoot<=self._3PG:
+                if shoot<=self._3PG*(1-self.stamina/100*(i))*state:
                     score+=1
+                    offset+=2
                 else:
-                    pass
+                    offset-=3
             else:
-                if shoot<=self._3PG:
+                if shoot<=self._3PG*(1-self.stamina/100*(i))*state:
                     score+=2
+                    offset+=2
                 else:
-                    pass
+                    offset-=3
+            state = self.get_on_fire_state(offset)
         return score
+
+    def get_on_fire_state(self,offset):
+        prob = random.randint(1,100)
+        if prob<(self.on_fire_prob+offset):
+            state = self.growing
+            print(self.name+ " is onfire")
+        else:
+            state= 1
+        return state
 
 def sort_dic(dic):
     """
@@ -52,7 +72,7 @@ def get_game_result(candidate_number,player_list):
     for player in player_list:
         score = player._3pointer_contest()
         result[player.name] = score
-        #print('{} got {} this round!'.format(player[0], score))
+        print('{} got {} this round!'.format(player.name, score))
     threshold = sort_dic(result)[candidate_number-1][1]
     for key, value in result.items():
         if value >= threshold:
@@ -67,12 +87,13 @@ def one_simulation():
     Simulate one game
     :return: the winner of the game
     """
-    curry = player('curry', 70)
-    george =player('george', 65)
-    beal = player('beal',68)
-    thompson = player('thompson',72)
-    gorden = player('gorden',69)
-    booker = player('booker',74)
+    curry = player('curry', 70,1,15,1.28)
+    george =player('george', 65,1,25,1.38)
+    beal = player('beal',68,1,22,1.32)
+    thompson = player('thompson',72,0.5,10,1.25)
+    gorden = player('gorden',69,1.5,13,1.3)
+    booker = player('booker',74,1.5,18,1.21)
+
     player_list = [curry,george,beal,thompson,gorden,booker]
     over_time_flag=True
     candidate_list = get_game_result(3,player_list)
