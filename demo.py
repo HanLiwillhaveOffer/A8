@@ -31,7 +31,9 @@ class player():
             shoot = random.randint(1,100)
             runtime = self.runtime(i)
             shootingtime = self.shootingtime(i, lefttime)
-            if i in range(self.bonus*5-4 ,self.bonus*5+1):
+            if lefttime <= 0:
+                break
+            elif i in range(self.bonus*5-4 ,self.bonus*5+1):
                 if shoot<=self._3PG*(1-self.stamina/100*(i))*state*math.log2(0.5*shootingtime+1):
                     score+=2
                     offset+=2
@@ -58,6 +60,11 @@ class player():
         return state
 
     def runtime(self, i):
+        """
+        simulate the time to run between each shooting spot
+        :param i: the number of shoot
+        :return: the simulated time spent of each run
+        """
         if (i + 1) % 5 == 0 and i < 24:
             runtime = random.uniform(2, 4)
         else:
@@ -65,6 +72,12 @@ class player():
         return runtime
 
     def shootingtime(self, i, lefttime):
+        """
+        simulate the time to shoot each ball
+        :param i: the number of shoot
+        :param lefttime: total time left in the game
+        :return: the simulated shooting time for each shoot
+        """
         if self.strategy == 1:
             shootingtime = random.uniform(1, lefttime/(25-i))
         elif self.strategy == 2:
@@ -82,6 +95,8 @@ class player():
                 shootingtime = random.uniform(1 / 0.8, lefttime / (25 - i)) * 0.8
             else:
                 shootingtime = random.uniform(1, lefttime / (25 - i))
+        elif self.strategy ==5:
+            shootingtime = random.uniform(2, 3)
         return shootingtime
 
 
@@ -123,7 +138,7 @@ def one_simulation():
     Simulate one game
     :return: the winner of the game
     """
-    curry = player('curry', 70,1,15,1.28,1,4)
+    curry = player('curry', 70,1,15,1.28,4,2)
     george =player('george', 65,1,25,1.38)
     beal = player('beal',68,1,22,1.32)
     thompson = player('thompson',72,0.5,10,1.25)
@@ -160,6 +175,7 @@ def main():
     print('The winning rate of thompson is {}.'.format(winner_list.count('thompson') / len(winner_list)))
     print('The winning rate of gorden is {}.'.format(winner_list.count('gorden') / len(winner_list)))
     print('The winning rate of booker is {}.'.format(winner_list.count('booker') / len(winner_list)))
+
 if __name__ == '__main__':
     main()
 
