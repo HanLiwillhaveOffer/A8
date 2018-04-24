@@ -2,13 +2,14 @@ from random import choice, randint
 import random
 import math
 
+stat = {}
 class player():
     name=''
     _3PG = 0
     stamina = 0
     on_fire_prob = 0
     growing = 1
-    def __init__(self,name,_3PG, stamina,on_fire_prob,growing,bonus=5,strategy=1):
+    def __init__(self,name,_3PG, stamina,on_fire_prob,growing,bonus=1,strategy=7):
         self.name = name
         self._3PG=_3PG
         self.stamina= stamina
@@ -31,6 +32,11 @@ class player():
             shoot = random.randint(1,100)
             runtime = self.runtime(i)
             shootingtime = self.shootingtime(i, lefttime)
+            if lefttime<shootingtime:
+                shootingtime=lefttime
+
+            if shootingtime>2:
+                shootingtime=2
             if lefttime <= 0:
                 break
             elif i in range(self.bonus*5-4 ,self.bonus*5+1):
@@ -96,7 +102,18 @@ class player():
             else:
                 shootingtime = random.uniform(1, lefttime / (25 - i))
         elif self.strategy ==5:
-            shootingtime = random.uniform(2, 3)
+            shootingtime = random.uniform(1, 2)
+        elif self.strategy ==6:
+            if i in range(self.bonus * 5 - 4, self.bonus * 5 + 1):
+                if lefttime>2:
+                    shootingtime = 2
+                else:
+                    shootingtime = random.uniform(1, lefttime / (25 - i))
+            else:
+                shootingtime = random.uniform(1, lefttime / (25 - i))
+        elif self.strategy == 7:
+            shootingtime= random.uniform(1.8,2.2)
+
         return shootingtime
 
 
@@ -108,7 +125,7 @@ def sort_dic(dic):
     """
     return sorted(dic.items(),key = lambda item:item[1],reverse=True)
 
-def get_game_result(candidate_number,player_list):
+def get_game_result(candidate_number,player_list,simulation_index):
     """
     To get the player list of next round based on the number of required candidate and the player list of current round.
     :param candidate_number: the number of required candidate
@@ -124,6 +141,13 @@ def get_game_result(candidate_number,player_list):
         score = player._3pointer_contest()
         result[player.name] = score
         print('{} got {} this round!'.format(player.name, score))
+        if simulation_index ==1:
+            stat[player.name] = [score]
+        else:
+            stat[player.name].append(score)
+
+    #print(result)
+    #print(stat)
     threshold = sort_dic(result)[candidate_number-1][1]
     for key, value in result.items():
         if value >= threshold:
@@ -133,12 +157,12 @@ def get_game_result(candidate_number,player_list):
             next_round_candidate_list.append(player)
     return next_round_candidate_list
 
-def one_simulation():
+def one_simulation(simulation_index):
     """
     Simulate one game
     :return: the winner of the game
     """
-    curry = player('curry', 70,1,15,1.28,4,2)
+    curry = player('curry', 70,1,15,1.28)
     george =player('george', 65,1,25,1.38)
     beal = player('beal',68,1,22,1.32)
     thompson = player('thompson',72,0.5,10,1.25)
@@ -147,9 +171,9 @@ def one_simulation():
 
     player_list = [curry,george,beal,thompson,gorden,booker]
     over_time_flag=True
-    candidate_list = get_game_result(3,player_list)
+    candidate_list = get_game_result(3,player_list,simulation_index)
     #print('The players in the final game are:')
-    candidate_list = get_game_result(1, candidate_list)
+    candidate_list = get_game_result(1, candidate_list,simulation_index+1)
     while over_time_flag:
         if len(candidate_list)==1:
             over_time_flag=False
@@ -157,24 +181,31 @@ def one_simulation():
             #print('The players in the overtime game are:')
             #for player in candidate_list:
                 #print(player[0])
-            candidate_list=get_game_result(1,candidate_list)
-
+            candidate_list=get_game_result(1,candidate_list,simulation_index+1)
 
     winner = candidate_list[0].name
     #print('The winner is {}!'.format(candidate_list[0][0]))
-    return winner
+    return winner,player_list
 
 
 def main():
     winner_list = []
-    for i in range(10000):
-        winner_list.append(one_simulation())
-    print('The winning rate of curry is {}.'.format(winner_list.count('curry')/len(winner_list)))
-    print('The winning rate of george is {}.'.format(winner_list.count('george') / len(winner_list)))
-    print('The winning rate of beal is {}.'.format(winner_list.count('beal') / len(winner_list)))
-    print('The winning rate of thompson is {}.'.format(winner_list.count('thompson') / len(winner_list)))
-    print('The winning rate of gorden is {}.'.format(winner_list.count('gorden') / len(winner_list)))
-    print('The winning rate of booker is {}.'.format(winner_list.count('booker') / len(winner_list)))
+    player_list = []
+    for simulation_index in range(10000):
+        winner, player_list = one_simulation(simulation_index + 1)
+        winner_list.append(winner)
+    print("The average score of", player_list[0].name, "is ", sum(stat[player_list[0].name])/len(stat[player_list[0].name]))
+    print("The average score of", player_list[1].name, "is ", sum(stat[player_list[1].name]) / len(stat[player_list[1].name]))
+    print("The average score of", player_list[2].name, "is ", sum(stat[player_list[2].name]) / len(stat[player_list[2].name]))
+    print("The average score of", player_list[3].name, "is ", sum(stat[player_list[3].name]) / len(stat[player_list[3].name]))
+    print("The average score of", player_list[4].name, "is ", sum(stat[player_list[4].name]) / len(stat[player_list[4].name]))
+    print("The average score of", player_list[5].name, "is ", sum(stat[player_list[5].name]) / len(stat[player_list[5].name]))
+    print('The winning rate of {} is {}.'.format(player_list[0].name, winner_list.count(player_list[0].name)/len(winner_list)))
+    print('The winning rate of {} is {}.'.format(player_list[1].name, winner_list.count('george') / len(winner_list)))
+    print('The winning rate of {} is {}.'.format(player_list[2].name, winner_list.count('beal') / len(winner_list)))
+    print('The winning rate of {} is {}.'.format(player_list[3].name, winner_list.count('thompson') / len(winner_list)))
+    print('The winning rate of {} is {}.'.format(player_list[4].name, winner_list.count('gorden') / len(winner_list)))
+    print('The winning rate of {} is {}.'.format(player_list[5].name, winner_list.count('booker') / len(winner_list)))
 
 if __name__ == '__main__':
     main()
