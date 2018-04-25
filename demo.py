@@ -3,7 +3,6 @@ import random
 import math
 import csv
 
-stat = {}
 class player():
     name=''
     _3PG = 0
@@ -27,7 +26,7 @@ class player():
         """
         score=0
         offset = 0
-        state=1
+        state=0
         lefttime = 60.0
         for i in range(25):
             shoot = random.randint(1,100)
@@ -38,13 +37,13 @@ class player():
             if lefttime <= 0:
                 break
             elif i in range(self.bonus*5-4 ,self.bonus*5+1):
-                if shoot<=self._3PG*(1-self.stamina/100*(i))*state*math.log2(0.5*shootingtime+1):
+                if shoot<=(self._3PG*(1-self.stamina/100*(i))*math.log2(0.5*shootingtime+1))+state:
                     score+=2
                     offset+=2
                 else:
                     offset-=3
             else:
-                if shoot<=self._3PG*(1-self.stamina/100*(i))*state*math.log2(0.5*shootingtime+1):
+                if shoot<=(self._3PG*(1-self.stamina/100*(i))*math.log2(0.5*shootingtime+1))+state:
                     score+=1
                     offset+=2
                 else:
@@ -65,7 +64,7 @@ class player():
             state = self.growing
             #print(self.name+ " is onfire")
         else:
-            state= 1
+            state= 0
         return state
 
     def runtime(self, i):
@@ -115,6 +114,7 @@ class player():
         :param lefttime: total time left in the game
         :return: the simulated shooting time for each shoot
         """
+        shootingtime = 0
         if self.strategy == 1:
             shootingtime = random.uniform(1, lefttime/(25-i))
         elif self.strategy == 2:
@@ -209,27 +209,6 @@ def one_simulation(player_list):
 
 
 def main():
-    curry = player('curry', 90,1,15,1.28)
-    george =player('george', 65,1,25,1.38)
-    beal = player('beal',68,1,22,1.32)
-    thompson = player('thompson',50,0.5,10,1.25)
-    gorden = player('gorden',69,1.5,13,1.3)
-    booker = player('booker',74,1.5,18,1.21)
-    player_list = [curry,george,beal,thompson,gorden,booker]
-    winner_list = []
-    for simulation_index in range(10000):
-        winner, player_list = one_simulation(player_list)
-        winner_list.append(winner)
-    print('--------------------------')
-    print("Ｗinning rate")             
-    print('{0:11} {1:<5}'.format(player_list[0].name, winner_list.count(player_list[0].name) / len(winner_list)))
-    print('{0:11} {1:<5}'.format(player_list[1].name, winner_list.count(player_list[1].name) / len(winner_list)))
-    print('{0:11} {1:<5}'.format(player_list[2].name, winner_list.count(player_list[2].name) / len(winner_list)))
-    print('{0:11} {1:<5}'.format(player_list[3].name, winner_list.count(player_list[3].name) / len(winner_list)))
-    print('{0:11} {1:<5}'.format(player_list[4].name, winner_list.count(player_list[4].name) / len(winner_list)))
-    print('{0:11} {1:<5}'.format(player_list[5].name, winner_list.count(player_list[5].name) / len(winner_list)))
-
-if __name__ == '__main__':
     file = csv.reader(open('player_data.csv'))
     headers = next(file)
     player_list=[]
@@ -242,6 +221,21 @@ if __name__ == '__main__':
         player_list.append(player(attr_list))
     for player in player_list:
         player.choose_strategy()
+    winner_list = []
+    for simulation_index in range(10000):
+        winner, player_list = one_simulation(player_list)
+        winner_list.append(winner)
+    print('--------------------------')
+    print("Ｗinning rate")
+    print('{0:11} {1:<5}'.format(player_list[0].name, winner_list.count(player_list[0].name) / len(winner_list)))
+    print('{0:11} {1:<5}'.format(player_list[1].name, winner_list.count(player_list[1].name) / len(winner_list)))
+    print('{0:11} {1:<5}'.format(player_list[2].name, winner_list.count(player_list[2].name) / len(winner_list)))
+    print('{0:11} {1:<5}'.format(player_list[3].name, winner_list.count(player_list[3].name) / len(winner_list)))
+    print('{0:11} {1:<5}'.format(player_list[4].name, winner_list.count(player_list[4].name) / len(winner_list)))
+    print('{0:11} {1:<5}'.format(player_list[5].name, winner_list.count(player_list[5].name) / len(winner_list)))
+
+if __name__ == '__main__':
+    main()
 
 
 
