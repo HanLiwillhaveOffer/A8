@@ -34,19 +34,16 @@ class player():
             shootingtime = self.shootingtime(i, lefttime)
             if lefttime<shootingtime:
                 shootingtime=lefttime
-
-            if shootingtime>2:
-                shootingtime=2
             if lefttime <= 0:
                 break
             elif i in range(self.bonus*5-4 ,self.bonus*5+1):
-                if shoot<=self._3PG*(1-self.stamina/100*(i))*state*math.log2(0.5*shootingtime+1):
+                if shoot<=self._3PG*(1-self.stamina/100*(i))*state*math.log2(0.5*min(shootingtime,2)+1):
                     score+=2
                     offset+=2
                 else:
                     offset-=3
             else:
-                if shoot<=self._3PG*(1-self.stamina/100*(i))*state*math.log2(0.5*shootingtime+1):
+                if shoot<=self._3PG*(1-self.stamina/100*(i))*state*math.log2(0.5*min(shootingtime,2)+1):
                     score+=1
                     offset+=2
                 else:
@@ -162,10 +159,10 @@ def one_simulation(simulation_index):
     Simulate one game
     :return: the winner of the game
     """
-    curry = player('curry', 70,1,15,1.28)
+    curry = player('curry', 90,1,15,1.28)
     george =player('george', 65,1,25,1.38)
     beal = player('beal',68,1,22,1.32)
-    thompson = player('thompson',72,0.5,10,1.25)
+    thompson = player('thompson',50,0.5,10,1.25)
     gorden = player('gorden',69,1.5,13,1.3)
     booker = player('booker',74,1.5,18,1.21)
 
@@ -191,21 +188,25 @@ def one_simulation(simulation_index):
 def main():
     winner_list = []
     player_list = []
-    for simulation_index in range(10000):
+    for simulation_index in range(100):
         winner, player_list = one_simulation(simulation_index + 1)
         winner_list.append(winner)
-    print("The average score of", player_list[0].name, "is ", sum(stat[player_list[0].name])/len(stat[player_list[0].name]))
-    print("The average score of", player_list[1].name, "is ", sum(stat[player_list[1].name]) / len(stat[player_list[1].name]))
-    print("The average score of", player_list[2].name, "is ", sum(stat[player_list[2].name]) / len(stat[player_list[2].name]))
-    print("The average score of", player_list[3].name, "is ", sum(stat[player_list[3].name]) / len(stat[player_list[3].name]))
-    print("The average score of", player_list[4].name, "is ", sum(stat[player_list[4].name]) / len(stat[player_list[4].name]))
-    print("The average score of", player_list[5].name, "is ", sum(stat[player_list[5].name]) / len(stat[player_list[5].name]))
-    print('The winning rate of {} is {}.'.format(player_list[0].name, winner_list.count(player_list[0].name)/len(winner_list)))
-    print('The winning rate of {} is {}.'.format(player_list[1].name, winner_list.count('george') / len(winner_list)))
-    print('The winning rate of {} is {}.'.format(player_list[2].name, winner_list.count('beal') / len(winner_list)))
-    print('The winning rate of {} is {}.'.format(player_list[3].name, winner_list.count('thompson') / len(winner_list)))
-    print('The winning rate of {} is {}.'.format(player_list[4].name, winner_list.count('gorden') / len(winner_list)))
-    print('The winning rate of {} is {}.'.format(player_list[5].name, winner_list.count('booker') / len(winner_list)))
+    print('--------------------------')
+    print("Average score")
+    print('{0:10} {1:<5}'.format(player_list[0].name, sum(stat[player_list[0].name]) / len(stat[player_list[0].name])))
+    print('{0:10} {1:<5}'.format(player_list[1].name, sum(stat[player_list[1].name]) / len(stat[player_list[1].name])))
+    print('{0:10} {1:<5}'.format(player_list[2].name, sum(stat[player_list[2].name]) / len(stat[player_list[2].name])))
+    print('{0:10} {1:<5}'.format(player_list[3].name, sum(stat[player_list[3].name]) / len(stat[player_list[3].name])))
+    print('{0:10} {1:<5}'.format(player_list[4].name, sum(stat[player_list[4].name]) / len(stat[player_list[4].name])))
+    print('{0:10} {1:<5}'.format(player_list[5].name, sum(stat[player_list[5].name]) / len(stat[player_list[5].name])))
+    print('--------------------------')
+    print("Ｗinning rate")             
+    print('{0:11} {1:<5}'.format(player_list[0].name, winner_list.count(player_list[0].name) / len(winner_list)))
+    print('{0:11} {1:<5}'.format(player_list[1].name, winner_list.count(player_list[0].name) / len(winner_list)))
+    print('{0:11} {1:<5}'.format(player_list[2].name, winner_list.count(player_list[1].name) / len(winner_list)))
+    print('{0:11} {1:<5}'.format(player_list[3].name, winner_list.count(player_list[2].name) / len(winner_list)))
+    print('{0:11} {1:<5}'.format(player_list[4].name, winner_list.count(player_list[3].name) / len(winner_list)))
+    print('{0:11} {1:<5}'.format(player_list[5].name, winner_list.count(player_list[4].name) / len(winner_list)))
 
 if __name__ == '__main__':
     main()
