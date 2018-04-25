@@ -156,6 +156,7 @@ def sort_dic(dic):
     """
     return sorted(dic.items(),key = lambda item:item[1],reverse=True)
 
+
 def get_game_result(candidate_number,player_list):
     """
     To get the player list of next round based on the number of required candidate and the player list of current round.
@@ -171,6 +172,7 @@ def get_game_result(candidate_number,player_list):
     for player in player_list:
         score = player._3pointer_contest()
         result[player.name] = score
+    #print(result)
         #print('{} got {} this round!'.format(player.name, score))
 
     #print(result)
@@ -204,11 +206,9 @@ def one_simulation(player_list):
             candidate_list=get_game_result(1,candidate_list)
 
     winner = candidate_list[0].name
-    #print('The winner is {}!'.format(candidate_list[0][0]))
-    return winner,candidate_list
+    return winner
 
-
-def main():
+if __name__ == '__main__':
     file = csv.reader(open('player_data.csv'))
     headers = next(file)
     player_list=[]
@@ -223,7 +223,7 @@ def main():
         player.choose_strategy()
     winner_list = []
     for simulation_index in range(10000):
-        winner, player_list = one_simulation(player_list)
+        winner= one_simulation(player_list)
         winner_list.append(winner)
     print('--------------------------')
     print("Ｗinning rate")
@@ -233,9 +233,8 @@ def main():
     print('{0:11} {1:<5}'.format(player_list[3].name, winner_list.count(player_list[3].name) / len(winner_list)))
     print('{0:11} {1:<5}'.format(player_list[4].name, winner_list.count(player_list[4].name) / len(winner_list)))
     print('{0:11} {1:<5}'.format(player_list[5].name, winner_list.count(player_list[5].name) / len(winner_list)))
-
-if __name__ == '__main__':
-    main()
+    print('{0:11} {1:<5}'.format(player_list[6].name, winner_list.count(player_list[6].name) / len(winner_list)))
+    print('{0:11} {1:<5}'.format(player_list[7].name, winner_list.count(player_list[7].name) / len(winner_list)))
 
 
 
