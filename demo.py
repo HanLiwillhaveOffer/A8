@@ -1,6 +1,7 @@
 from random import choice, randint
 import random
 import math
+import csv
 
 stat = {}
 class player():
@@ -9,12 +10,12 @@ class player():
     stamina = 0
     on_fire_prob = 0
     growing = 1
-    def __init__(self,name,_3PG, stamina,on_fire_prob,growing,bonus=1,strategy=7):
-        self.name = name
-        self._3PG=_3PG
-        self.stamina= stamina
-        self.on_fire_prob = on_fire_prob
-        self.growing=growing
+    def __init__(self,attr_list,bonus=1,strategy=7):
+        self.name = attr_list[0]
+        self._3PG=eval(attr_list[1])
+        self.stamina= eval(attr_list[2])
+        self.on_fire_prob = eval(attr_list[3])
+        self.growing=eval(attr_list[4])
         self.bonus = bonus
         self.strategy = strategy
 
@@ -92,7 +93,7 @@ class player():
                 avg_score = 0
                 score_list = []
                 self.strategy=strategy
-                for round in range(1000):
+                for round in range(3000):
                     score = self._3pointer_contest()
                     score_list.append(score)
                 avg_score = sum(score_list)/len(score_list)
@@ -103,7 +104,7 @@ class player():
                     best_strategy=self.strategy
         self.bonus = best_bonus
         self.strategy=best_strategy
-        print('The final stratgy this player applied is: bonus {} and strategy {} with the average score of {}'.format(self.bonus,self.strategy,best_score))
+        print('The final stratgy {} applied is: bonus {} and strategy {} with the average score of {}'.format(self.name,self.bonus,self.strategy,best_score))
 
 
 
@@ -229,13 +230,16 @@ def main():
     print('{0:11} {1:<5}'.format(player_list[5].name, winner_list.count(player_list[5].name) / len(winner_list)))
 
 if __name__ == '__main__':
-    curry = player('curry', 90,1,15,1.28)
-    george =player('george', 65,1,25,1.38)
-    beal = player('beal',68,1,22,1.32)
-    thompson = player('thompson',50,0.5,10,1.25)
-    gorden = player('gorden',69,1.5,13,1.3)
-    booker = player('booker',74,1.5,18,1.21)
-    player_list = [curry, george, beal, thompson, gorden, booker]
+    file = csv.reader(open('player_data.csv'))
+    headers = next(file)
+    player_list=[]
+    for row in file:
+        num = 0
+        attr_list=[]
+        for header in headers:
+            attr_list.append(row[num])
+            num+=1
+        player_list.append(player(attr_list))
     for player in player_list:
         player.choose_strategy()
 
